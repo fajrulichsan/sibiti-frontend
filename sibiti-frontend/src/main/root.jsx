@@ -1,9 +1,9 @@
 import {createBrowserRouter} from 'react-router-dom'
-import Ujian from '../admin/ujian/Ujian';
+import Event from '../admin/ujian/Event';
 const router = createBrowserRouter([
     {
       path : "/",
-      element : <Ujian/>
+      element : <Event/>
     },
   ]);
 
