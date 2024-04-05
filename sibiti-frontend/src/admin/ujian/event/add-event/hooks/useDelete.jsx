@@ -2,9 +2,8 @@ import { ExclamationCircleFilled } from "@ant-design/icons";
 import { Modal} from "antd";
 const { confirm } = Modal;
 
-const useDelete = () => {
-    
-  const showDeleteConfirm = () => {
+const useDelete = (dataSource, setDataSource) => {
+  const showDeleteConfirm = (key) => {
     confirm({
         title: "Are you sure delete this task?",
         icon: <ExclamationCircleFilled />,
@@ -13,7 +12,10 @@ const useDelete = () => {
         okType: "danger",
         cancelText: "No",
         onOk() {
-            console.log("OK");
+            // Hapus data dari dataSource berdasarkan id
+            console.log(dataSource);
+            const newData = dataSource.filter(item => item.key !== key);
+            setDataSource(newData);
         },
         onCancel() {
             console.log("Cancel");

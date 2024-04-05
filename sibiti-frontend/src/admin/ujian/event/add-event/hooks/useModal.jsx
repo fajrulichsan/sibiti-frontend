@@ -1,5 +1,5 @@
 import { useState } from "react";
-const useModal = () => {
+const useModal = (dataSource, setDataSource) => {
     const [modalVisible, setModalVisible] = useState(false);
 
     const showModal = () => {
@@ -19,7 +19,7 @@ const useModal = () => {
         setModalVisible(false);
     };
 
-    return {modalVisible, setModalVisible, showModal, handleCancel, handleAdd}
+    return {modalVisible, setModalVisible, showModal, handleCancel, handleAdd, dataSource, setDataSource}
 }
 
 export default useModal

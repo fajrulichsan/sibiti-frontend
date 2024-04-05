@@ -16,25 +16,19 @@ import useModal from "./hooks/useModal";
 
 const AddEvent = () => {
     const [dataSource, setDataSource] = useState([
-        {
-            key: "1",
-            name: "Penalaran",
-            jumlah: 15,
-            opsi: 5,
-            waktu: 60,
-            status: "publish",
-        },
+      
     ]);
+    const { showDeleteConfirm } = useDelete(dataSource, setDataSource);
 
-    const { showDeleteConfirm } = useDelete();
+    const {modalVisible, showModal, handleCancel, handleAdd} = useModal(dataSource, setDataSource)
 
-    const {modalVisible, showModal, handleCancel, handleAdd} = useModal()
 
     const columns = [
         {
             title: "No",
             dataIndex: "key",
             key: "key",
+            align: "center",
             width: "3%",
         },
         {
@@ -47,30 +41,38 @@ const AddEvent = () => {
             title: "Jumlah",
             dataIndex: "jumlah",
             key: "jumlah", 
-            width: "10%"
+            align: "center",
+            width: "10%",
+            render: (jumlah) => `${jumlah} Buah`,
 
         },
         {
             title: "Opsi",
             dataIndex: "opsi",
             key: "opsi",
+            align: "center",
             width: "10%",
+            render: (opsi) => `${opsi} Opsi`,
         },
         {
             title: "Waktu",
             dataIndex: "waktu",
             key: "waktu",
+            align: "center",
             width: "10%",
+            render : (waktu) => `${waktu} Menit` 
         },
         {
             title: "Status",
             dataIndex: "status",
             key: "status",
+            align: "center",
             width: "10%",
         },
         {
             title: "Action",
             dataIndex: "action",
+            align: "center",
             key: "action",
             render: (text, record) => (
                 <Space size="middle">
@@ -84,7 +86,7 @@ const AddEvent = () => {
                 
                         <Button
                             danger
-                            onClick={() => showDeleteConfirm()}
+                            onClick={() => showDeleteConfirm(record.key)}
                         >
                             Delete
                         </Button>
@@ -93,11 +95,6 @@ const AddEvent = () => {
             width: "10%",
         },
     ];
-
-    const handleDelete = (key) => {
-        const newData = dataSource.filter((item) => item.key !== key);
-        setDataSource(newData);
-    };
 
     return (
         <Fragment>
@@ -150,7 +147,7 @@ const AddEvent = () => {
                     labelAlign="left"
                     style={{ marginBottom: 10 }}
                 >
-                    <Radio.Group defaultValue="draft">
+                    <Radio.Group>
                         <Radio value="publish" style={{ width: 150 }}>
                             Publish
                         </Radio>
