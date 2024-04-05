@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { Table, Select, Input, Button, Space, Popconfirm, Tag } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import { QuestionCircleOutlined } from "@ant-design/icons";
+import React from "react";
+import { Table, Select, Input, Button, Space, Tag, Modal } from "antd";
+import { EditOutlined } from "@ant-design/icons";
 import useTable from "./hooks/useTable";
 import useDelete from "./hooks/useDelete";
 import useEdit from "./hooks/useEdit";
+import { Link } from "react-router-dom";
 const { Option } = Select;
 const { Search } = Input;
 
@@ -53,19 +53,57 @@ const data = [
         harga: 25000,
         subtes: "2",
         status: ["Publish"], //status : publish , waiting, draft
-    }
+    },
+    {
+        key: "6",
+        name: "Ujian Tryout SBM 1",
+        publish: "10:10 20 Desember 2023 ",
+        duedate: "10:10 21 Desember 2023 ",
+        harga: 25000,
+        subtes: "2",
+        status: ["Publish"], //status : publish , waiting, draft
+    },
+    {
+        key: "7",
+        name: "Ujian Tryout SBM 1",
+        publish: "10:10 20 Desember 2023 ",
+        duedate: "10:10 21 Desember 2023 ",
+        harga: 25000,
+        subtes: "2",
+        status: ["Publish"], //status : publish , waiting, draft
+    },
+    {
+        key: "8",
+        name: "Ujian Tryout SBM 1",
+        publish: "10:10 20 Desember 2023 ",
+        duedate: "10:10 21 Desember 2023 ",
+        harga: 25000,
+        subtes: "2",
+        status: ["Publish"], //status : publish , waiting, draft
+    },
+    {
+        key: "9",
+        name: "Ujian Tryout SBM 1",
+        publish: "10:10 20 Desember 2023 ",
+        duedate: "10:10 21 Desember 2023 ",
+        harga: 25000,
+        subtes: "2",
+        status: ["Publish"], //status : publish , waiting, draft
+    },
+    {
+        key: "10",
+        name: "Ujian Tryout SBM 1",
+        publish: "10:10 20 Desember 2023 ",
+        duedate: "10:10 21 Desember 2023 ",
+        harga: 25000,
+        subtes: "2",
+        status: ["Publish"], //status : publish , waiting, draft
+    },
 ];
 
 const ListEvent = () => {
     const { pagination, handleTableChange, handleChangePageSize } = useTable();
-    const {
-        deleteKey,
-        confirmLoading,
-        showPopconfirm,
-        handleOk,
-        handleCancel,
-        handleDelete,
-    } = useDelete();
+    const { showDeleteConfirm } = useDelete();
     const { handleEdit } = useEdit();
 
     const columns = [
@@ -88,23 +126,23 @@ const ListEvent = () => {
             width: "15%",
         },
         {
-          title: "Duedate",
-          dataIndex: "duedate",
-          key: "key",
-          width: "15%",
+            title: "Duedate",
+            dataIndex: "duedate",
+            key: "key",
+            width: "15%",
         },
         {
-          title: "Harga",
-          dataIndex: "harga",
-          key: "key",
-          width: "10%",
-          render: (text, record) => `Rp. ${record.harga}`,
+            title: "Harga",
+            dataIndex: "harga",
+            key: "key",
+            width: "10%",
+            render: (text, record) => `Rp. ${record.harga}`,
         },
         {
-          title: "Sub Tes",
-          dataIndex: "subtes",
-          key: "key",
-          width: "7%",
+            title: "Sub Tes",
+            dataIndex: "subtes",
+            key: "key",
+            width: "7%",
         },
         {
             title: "status",
@@ -118,7 +156,7 @@ const ListEvent = () => {
                             color = "volcano";
                         }
                         return (
-                            <Tag color={color} key={tag} >
+                            <Tag color={color} key={tag}>
                                 {tag.toUpperCase()}
                             </Tag>
                         );
@@ -139,26 +177,9 @@ const ListEvent = () => {
                     >
                         Edit
                     </Button>
-                    <Popconfirm
-                        title="Hapus Ujian"
-                        description="Apakah anda ingin menghapus data ini ?"
-                        open={deleteKey == record.key}
-                        onConfirm={handleOk}
-                        okButtonProps={{
-                            loading: confirmLoading,
-                        }}
-                        icon={
-                            <QuestionCircleOutlined style={{ color: "red" }} />
-                        }
-                        onCancel={handleCancel}
-                    >
-                        <Button
-                            danger
-                            onClick={() => showPopconfirm(record.key)}
-                        >
-                            Delete
-                        </Button>
-                    </Popconfirm>
+                    <Button onClick={showDeleteConfirm} danger>
+                        Delete
+                    </Button>
                 </Space>
             ),
             width: "10%",
@@ -169,16 +190,19 @@ const ListEvent = () => {
         <div>
             <div className="flex w-full justify-between mb-4">
                 <Select
-                    defaultValue="2"
-                    style={{ width: 120 }}
+                    defaultValue="10"
+                    style={{ width: 80 }}
                     onChange={handleChangePageSize}
                 >
-                    <Option value="2">2 per page</Option>
-                    <Option value="5">5 per page</Option>
-                    <Option value="10">10 per page</Option>
+                    <Option value="10">10</Option>
+                    <Option value="25">25</Option>
+                    <Option value="50">50</Option>
                 </Select>
+
                 <div className="space-x-2">
-                    <Button type="primary">Tambah</Button>
+                    <Link to="/cms/ujian/event/add">
+                        <Button type="primary">Tambah</Button>
+                    </Link>
                     <Search
                         placeholder="input search text"
                         allowClear
@@ -187,6 +211,7 @@ const ListEvent = () => {
                     />
                 </div>
             </div>
+
             <Table
                 columns={columns}
                 dataSource={data}
@@ -195,6 +220,7 @@ const ListEvent = () => {
                     showSizeChanger: false,
                     position: ["bottomCenter"],
                 }}
+                size="small"
                 onChange={handleTableChange}
             />
         </div>

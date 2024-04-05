@@ -1,9 +1,8 @@
 import React, { Fragment } from 'react'
-import NavbarCms from '../../components/NavbarCms'
-import Sidebar from '../../components/Sidebar.tsx'
-import ListEvent from './event/ListEvent'
+import NavbarCms from '../components/NavbarCms'
+import Sidebar from '../components/Sidebar.jsx'
 
-const Event = () => {
+const CmsTemplate = ({content, title}) => {
   return (
     <Fragment>
         <div className='grid grid-cols-12'>
@@ -15,8 +14,8 @@ const Event = () => {
               <NavbarCms/>
             </div>
             <div className='px-5'>
-              <h1 className='text-2xl my-5'>Event</h1>
-              <ListEvent/>
+              <h1 className='text-2xl font-semibold my-5'>{title}</h1>
+              {content}
             </div>
           </div>
         </div>
@@ -26,4 +25,4 @@ const Event = () => {
   )
 }
 
-export default Event;
+export default CmsTemplate;
