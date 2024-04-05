@@ -15,11 +15,8 @@ import useDelete from "./hooks/useDelete";
 import useModal from "./hooks/useModal";
 
 const AddEvent = () => {
-    const [dataSource, setDataSource] = useState([
-      
-    ]);
+    const [dataSource, setDataSource] = useState([]);
     const { showDeleteConfirm } = useDelete(dataSource, setDataSource);
-
     const {modalVisible, showModal, handleCancel, handleAdd} = useModal(dataSource, setDataSource)
 
 
