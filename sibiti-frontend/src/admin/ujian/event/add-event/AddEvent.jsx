@@ -153,7 +153,7 @@ const AddEvent = () => {
                 </Form.Item>
             </Form>
 
-            <div className="flex justify-between mt-10">
+            {/* <div className="flex justify-between mt-10">
                 <h1 className="text-2xl font-semibold">Sub Tes</h1>
                 <Button
                     onClick={showModal}
@@ -162,22 +162,22 @@ const AddEvent = () => {
                 >
                     Tambah Sub Tes
                 </Button>
-            </div>
+            </div> */}
 
-            <ModalAddEvent
+            {/* <ModalAddEvent
                 visible={modalVisible}
                 onCancel={handleCancel}
                 onAdd={handleAdd}
-            />
+            /> */}
 
-            <Table
+            {/* <Table
                 bordered
                 dataSource={dataSource}
                 columns={columns}
                 rowClassName="editable-row"
                 size="small"
                 pagination={false}
-            />
+            /> */}
         </Fragment>
     );
 };
