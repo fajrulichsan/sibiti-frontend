@@ -1,10 +1,11 @@
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { Modal} from "antd";
 import axios from "axios";
+import config from "../../../../../config/config";
 const { confirm } = Modal;
 
 const useDelete = (refreshTable) => {
-    
+    const {baseUrl} = config()
   const showDeleteConfirm = (id) => {
     confirm({
         title: "Are you sure delete this task?",
@@ -15,7 +16,7 @@ const useDelete = (refreshTable) => {
         cancelText: "No",
         onOk() {
             axios
-            .delete(`http://localhost:3000/event/${id}`)
+            .delete(`${baseUrl}/event/${id}`)
             .then((response) => {
               console.log("Deleted data with ID:", id);
               console.log("API response:", response.data);

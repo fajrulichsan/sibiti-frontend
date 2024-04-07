@@ -7,16 +7,17 @@ import useDelete from "./hooks/useDelete";
 import useEdit from "./hooks/useEdit";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import config from "../../../../config/config";
 
 const { Option } = Select;
 const { Search } = Input;
 
 const ListEvent = () => {
-    const API_BASE_URL = "http://localhost:3000"
+    const {baseUrl} = config()
     const refreshTable = () => {
         fetchData();
       };
-    const { pagination, handleTableChange, handleChangePageSize } = useTable();
+    const { pagination, handleTableChange, handleChangePageSize, statusText, statusColor } = useTable();
     const { showDeleteConfirm } = useDelete(refreshTable);
     const { handleEdit } = useEdit();
     const [loading, setLoading] = useState(false);
@@ -29,7 +30,7 @@ const ListEvent = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`${API_BASE_URL}` + "/event");
+            const response = await axios.get(`${baseUrl}` + "/event");
             setEvents(response.data.data);
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -78,10 +79,21 @@ const ListEvent = () => {
             width: "7%",
         },
         {
-            title: "status",
+            title: "Status",
             key: "status",
             dataIndex: "status",
             width: "8%",
+            render: (status) => {
+                let color = status == 2 ? 'geekblue' : 'green';
+                if (status === 'loser') {
+                  color = 'volcano';
+                }
+                return (
+                  <Tag color={statusColor[status]} key={status}>
+                    {statusText[status]}
+                  </Tag>
+                );
+              },
         },
         {
             title: "Action",
