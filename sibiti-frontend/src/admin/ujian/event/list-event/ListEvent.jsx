@@ -1,13 +1,16 @@
 // export default ListEvent;
 import React, { useEffect, useState } from "react";
-import { Table, Select, Input, Button, Space, Tag, Modal } from "antd";
+import { Table, Select, Input, Button, Space, Tag } from "antd";
+import { Link } from "react-router-dom";
 import { EditOutlined } from "@ant-design/icons";
+import moment from 'moment';
+import 'moment-timezone';
+import axios from "axios";
+import config from "../../../../config/config";
+
 import useTable from "./hooks/useTable";
 import useDelete from "./hooks/useDelete";
 import useEdit from "./hooks/useEdit";
-import { Link } from "react-router-dom";
-import axios from "axios";
-import config from "../../../../config/config";
 
 const { Option } = Select;
 const { Search } = Input;
@@ -38,6 +41,9 @@ const ListEvent = () => {
         setLoading(false);
     };
 
+    const convertToIndonesiaTime = (time) => {
+        return moment.utc(time).tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
+      };
 
     const columns = [
         {
@@ -58,12 +64,14 @@ const ListEvent = () => {
             dataIndex: "publish",
             key: "publish",
             width: "15%",
+            render : (time) => <span>{convertToIndonesiaTime(time)}</span>
         },
         {
             title: "Duedate",
             dataIndex: "dueDate",
             key: "duedate",
             width: "15%",
+            render : (time) => <span>{convertToIndonesiaTime(time)}</span>
         },
         {
             title: "Harga",
@@ -71,12 +79,6 @@ const ListEvent = () => {
             key: "harga",
             width: "10%",
             render: (text, record) => `Rp. ${record.harga}`,
-        },
-        {
-            title: "Sub Tes",
-            dataIndex: "subtest",
-            key: "subtes",
-            width: "7%",
         },
         {
             title: "Status",
