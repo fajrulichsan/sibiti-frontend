@@ -1,38 +1,105 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Input, DatePicker, InputNumber, Button, Modal } from "antd";
 import axios from "axios";
 import config from "../../../../config/config";
 import Loading from "../../../../components/Loading";
 import ModalPopup from "../../../../components/ModalPopup";
+import moment from 'moment';
+import 'moment-timezone';
+import { useParams } from "react-router-dom";
 
 const EventForm = () => {
     const { baseUrl } = config();
+    const { id } = useParams();
     const [form] = Form.useForm();
     const [isLoading, setIsLoading] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(false);
+
+    useEffect(() => {
+        if (id) {
+            setIsEditMode(true);
+            fetchEventData(id);
+        } else {
+            setIsEditMode(false);
+        }
+    }, [id]);
+
+    const fetchEventData = async (eventId) => {
+        try {
+            const response = await axios.get(`${baseUrl}/event/${eventId}`);
+            const eventData = response.data.data;
+            console.log(eventData);
+
+            form.setFieldsValue({
+                name: eventData.name,
+                publish: moment(eventData.publish),
+                dueDate: moment(eventData.dueDate),
+                harga: eventData.harga,
+                subtest: eventData.subtest,
+            });
+        } catch (error) {
+            console.error("Error fetching event data:", error);
+        }
+    };
+
+    // const postData = (data, status) => {
+    //     let dataFinal = { ...data };
+    //     dataFinal.status = status;
+    //     axios
+    //         .post(`${baseUrl}/event`, dataFinal)
+    //         .then((response) => {
+    //             console.log(response.data);
+    //             setIsLoading(false);
+    //             ModalPopup({
+    //                 title: "Success",
+    //                 content: "Data berhasil disimpan",
+    //                 onOk: (window.location.href = "/cms/ujian/event"),
+    //             }).success();
+    //         })
+    //         .catch((error) => {
+    //             console.error("Error:", error);
+    //             ModalPopup({
+    //                 title: "Error",
+    //                 content: error.message,
+    //             }).error();
+    //             setIsLoading(false);
+    //         });
+    // };
 
     const postData = (data, status) => {
         let dataFinal = { ...data };
         dataFinal.status = status;
-        axios
-            .post(`${baseUrl}/event`, dataFinal)
-            .then((response) => {
-                console.log(response.data);
-                setIsLoading(false);
-                ModalPopup({
-                    title: "Success",
-                    content: "Data berhasil disimpan",
-                    onOk : window.location.href ="/cms/ujian/event"
-                }).success();
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-                ModalPopup({
-                    title: "Error",
-                    content: error.message,
-                }).error();
-                setIsLoading(false);
-            });
-    };
+        const url = isEditMode ? `${baseUrl}/event/${id}` : `${baseUrl}/event`;
+      
+        const requestConfig = {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+      
+        const axiosMethod = isEditMode ? axios.patch : axios.post;
+      
+        axiosMethod(url, dataFinal, requestConfig)
+          .then((response) => {
+            console.log(response.data);
+            setIsLoading(false);
+            ModalPopup({
+              title: "Success",
+              content: "Data berhasil disimpan",
+              onOk: () => {
+                window.location.href = "/cms/ujian/event";
+              },
+            }).success();
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            ModalPopup({
+              title: "Error",
+              content: error.message,
+            }).error();
+            setIsLoading(false);
+          });
+      };
 
     const submit = (status) => {
         form.validateFields()
@@ -55,9 +122,9 @@ const EventForm = () => {
         ModalPopup({
             title: "Apakah ingin cancel ?",
             content: "Klik OK untuk keluar",
-            onOk : window.location.href = "/cms/ujian/event"
-        }).showConfirm()
-    }
+            onOk: (window.location.href = "/cms/ujian/event"),
+        }).showConfirm();
+    };
 
     return (
         <>
@@ -152,17 +219,15 @@ const EventForm = () => {
                         >
                             Save
                         </Button>
-                        <Button 
-                            ghost 
-                            type="primary" 
+                        <Button
+                            ghost
+                            type="primary"
                             htmlType="submit"
-                            onClick={() => submit(0)}>
+                            onClick={() => submit(0)}
+                        >
                             Draft
                         </Button>
-                        <Button 
-                            danger 
-                            type="default"
-                            onClick={() => cancel()}>
+                        <Button danger type="default" onClick={() => cancel()}>
                             Cancel
                         </Button>
                     </div>

@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { Table, Select, Input, Button, Space, Tag } from "antd";
 import { Link } from "react-router-dom";
-import { EditOutlined } from "@ant-design/icons";
 import moment from 'moment';
 import 'moment-timezone';
 import axios from "axios";
@@ -10,7 +9,6 @@ import config from "../../../../config/config";
 
 import useTable from "./hooks/useTable";
 import useDelete from "./hooks/useDelete";
-import useEdit from "./hooks/useEdit";
 
 const { Option } = Select;
 const { Search } = Input;
@@ -22,7 +20,6 @@ const ListEvent = () => {
       };
     const { pagination, handleTableChange, handleChangePageSize, statusText, statusColor } = useTable();
     const { showDeleteConfirm } = useDelete(refreshTable);
-    const { handleEdit } = useEdit();
     const [loading, setLoading] = useState(false);
     const [events, setEvents] = useState([]);
 
@@ -101,17 +98,23 @@ const ListEvent = () => {
             title: "Action",
             key: "id",
             render: (text, record) => (
-                <Space size="middle">
+                <Space size="small">
+                    <Button
+                        key={record.key}
+                        ghost
+                        type="primary"
+                    >
+                        Subtest
+                    </Button>
                     <Button
                         key={record.key}
                         type="default"
-                        icon={<EditOutlined />}
-                        onClick={() => handleEdit(record.id)}
+                        onClick={() => window.location.href = "/cms/ujian/event/edit/" + record.id}
                     >
                         Edit
                     </Button>
                     <Button
-                      key={record.key}
+                      key={record.id}
                      onClick={() => showDeleteConfirm(record.id)} danger>
                         Delete
                     </Button>

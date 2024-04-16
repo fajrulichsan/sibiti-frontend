@@ -16,6 +16,10 @@ const router = createBrowserRouter([
         path: "/cms/ujian/event/add",
         element: <CmsTemplate title="Tambah Event" content={<AddEvent />} />,
     },
+    {
+        path: "/cms/ujian/event/edit/:id",
+        element: <CmsTemplate title="Edit Event" content={<AddEvent />} />,
+    },
 ]);
 
 export default router;
