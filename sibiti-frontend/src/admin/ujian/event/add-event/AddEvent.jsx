@@ -1,101 +1,221 @@
-import React, { Fragment, useState } from "react";
-import { EditOutlined } from "@ant-design/icons";
+// import React, { useState } from "react";
+// import { Form, Input, DatePicker, InputNumber, Radio, Button, Modal } from "antd";
+// import axios from "axios";
+// import config from "../../../../config/config";
+
+// const EventForm = () => {
+//     const {baseUrl} = config()
+//   const [form] = Form.useForm();
+//   const [isModalVisible, setIsModalVisible] = useState(false);
+//   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
+//   const [isLoading, setIsLoading] = useState(false);
+
+//   const onFinish = (values) => {
+//     setIsModalVisible(true);
+//   };
+
+//   const handleOk = () => {
+//     form
+//       .validateFields()
+//       .then((values) => {
+//         setIsModalVisible(false);
+//         setIsLoading(true);
+//         postData(values);
+//       })
+//       .catch((info) => {
+//         console.log("Validate Failed:", info);
+//       });
+//   };
+
+//   const handleCancel = () => {
+//     setIsModalVisible(false);
+//   };
+
+//   const postData = (data) => {
+//     console.log(data);
+//     let dataFinal = {... data}
+//     dataFinal.status = Number(data.status)
+
+//     axios.post(`${baseUrl}/event`, dataFinal)
+//       .then((response) => {
+//         console.log(response.data);
+//         setIsSuccessModalVisible(true);
+//         setIsLoading(false);
+//       })
+//       .catch((error) => {
+//         console.error("Error:", error);
+//         setIsLoading(false);
+//         if (error.response && error.response.status === 400) {
+//             Modal.error({
+//               title: 'Error',
+//               content: error.response.data.message, // Menampilkan pesan dari server
+//             });
+//           } else {
+//             Modal.error({
+//               title: 'Error',
+//               content: 'Failed to submit data!',
+//             });
+//           }
+//       });
+//   };
+
+//   const handleSuccessModalOk = () => {
+//     setIsSuccessModalVisible(false);
+//   };
+
+//   return (
+//     <>
+//       <Form
+//         form={form}
+//         labelCol={{
+//           span: 4,
+//         }}
+//         wrapperCol={{
+//           span: 14,
+//         }}
+//         layout="horizontal"
+//         initialValues={{
+//           size: "default",
+//         }}
+//         size={"default"}
+//         style={{
+//           maxWidth: 600,
+//         }}
+//         onFinish={onFinish}
+//       >
+//         <Form.Item label="Nama" labelAlign="left" style={{ marginBottom: 10 }} name="name" rules={[{ required: true, message: 'Nama wajib diisi!' }]}>
+//           <Input style={{ width: 400 }} />
+//         </Form.Item>
+//         <Form.Item label="Publish" labelAlign="left" style={{ marginBottom: 10 }} name="publish" rules={[{ required: true, message: 'Tanggal Publish wajib diisi!' }]}>
+//           <DatePicker showTime format="DD/MM/YYYY HH:mm" style={{ width: 400 }} />
+//         </Form.Item>
+//         <Form.Item label="Duedate" labelAlign="left" style={{ marginBottom: 10 }} name="dueDate" rules={[{ required: true, message: 'Tanggal Duedate wajib diisi!' }]}>
+//           <DatePicker showTime format="DD/MM/YYYY HH:mm" style={{ width: 400 }} />
+//         </Form.Item>
+//         <Form.Item label="Harga" labelAlign="left" style={{ marginBottom: 10 }} name="harga" rules={[{ required: true, message: 'Harga wajib diisi!' }]}>
+//           <InputNumber style={{ width: 400 }} />
+//         </Form.Item>
+//         <Form.Item label="Sub Test" labelAlign="left" style={{ marginBottom: 10 }} name="subtest" rules={[{ required: true, message: 'Sub Test wajib diisi!' }]}>
+//           <InputNumber style={{ width: 400 }} />
+//         </Form.Item>
+//         <Form.Item label="Status" labelAlign="left" style={{ marginBottom: 10 }} name="status" rules={[{ required: true, message: 'Status wajib diisi!' }]}>
+//           <Radio.Group>
+//             <Radio value="1" style={{ width: 150 }}>
+//               Publish
+//             </Radio>
+//             <Radio value="0">Draft</Radio>
+//           </Radio.Group>
+//         </Form.Item>
+//         <Form.Item wrapperCol={{ offset: 4, span: 14 }}>
+//         <Button type="primary" htmlType="submit" loading={isLoading}>
+//             {isLoading ? 'Loading' : 'Submit'}
+//           </Button>
+//         </Form.Item>
+//       </Form>
+
+//       {/* Modal Konfirmasi */}
+//       <Modal title="Konfirmasi" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+//         <p>Apakah Anda yakin ingin menyimpan data ini?</p>
+//       </Modal>
+
+//       {/* Modal Sukses */}
+//       <Modal title="Sukses" visible={isSuccessModalVisible} onOk={handleSuccessModalOk} onCancel={handleSuccessModalOk}>
+//         <p>Data berhasil disimpan!</p>
+//       </Modal>
+//     </>
+//   );
+// };
+
+// export default EventForm;
+
+import React, { useState } from "react";
 import {
-    DatePicker,
     Form,
     Input,
+    DatePicker,
     InputNumber,
     Radio,
-    Table,
     Button,
-    Space
+    Modal,
+    ConfigProvider
 } from "antd";
-import ModalAddEvent from "./ModalAddEvent";
-import useDelete from "./hooks/useDelete";
-import useModal from "./hooks/useModal";
+import moment from "moment"; // Import library moment
+import axios from "axios";
+import config from "../../../../config/config";
+import dayjs from "dayjs";
+import locale from "antd/lib/locale/id_ID"; // Import locale from Ant Design
+import 'dayjs/locale/id'; // Import locale from dayjs
+dayjs.locale('id');
 
-const AddEvent = () => {
-    const [dataSource, setDataSource] = useState([]);
-    const { showDeleteConfirm } = useDelete(dataSource, setDataSource);
-    const {modalVisible, showModal, handleCancel, handleAdd} = useModal(dataSource, setDataSource)
+const EventForm = () => {
+    const { baseUrl } = config();
+    const [form] = Form.useForm();
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
+    const onFinish = (values) => {
+        setIsModalVisible(true);
+    };
 
-    const columns = [
-        {
-            title: "No",
-            dataIndex: "key",
-            key: "key",
-            align: "center",
-            width: "3%",
-        },
-        {
-            title: "Nama",
-            dataIndex: "name",
-            key: "name",
-            width: "30%"
-        },
-        {
-            title: "Jumlah",
-            dataIndex: "jumlah",
-            key: "jumlah", 
-            align: "center",
-            width: "10%",
-            render: (jumlah) => `${jumlah} Buah`,
+    const handleOk = () => {
+        form.validateFields()
+            .then((values) => {
+                setIsModalVisible(false);
+                setIsLoading(true);
+                postData(values);
+            })
+            .catch((info) => {
+                console.log("Validate Failed:", info);
+            });
+    };
 
-        },
-        {
-            title: "Opsi",
-            dataIndex: "opsi",
-            key: "opsi",
-            align: "center",
-            width: "10%",
-            render: (opsi) => `${opsi} Opsi`,
-        },
-        {
-            title: "Waktu",
-            dataIndex: "waktu",
-            key: "waktu",
-            align: "center",
-            width: "10%",
-            render : (waktu) => `${waktu} Menit` 
-        },
-        {
-            title: "Status",
-            dataIndex: "status",
-            key: "status",
-            align: "center",
-            width: "10%",
-        },
-        {
-            title: "Action",
-            dataIndex: "action",
-            align: "center",
-            key: "action",
-            render: (text, record) => (
-                <Space size="middle">
-                    <Button
-                        type="default"
-                        icon={<EditOutlined />}
-                        onClick={() => handleEdit(record.key)}
-                    >
-                        Edit
-                    </Button>
-                
-                        <Button
-                            danger
-                            onClick={() => showDeleteConfirm(record.key)}
-                        >
-                            Delete
-                        </Button>
-                </Space>
-            ),
-            width: "10%",
-        },
-    ];
+    const handleCancel = () => {
+        setIsModalVisible(false);
+    };
+
+    const postData = (data) => {
+        let dataFinal = { ...data };
+        dataFinal.status = Number(data.status);
+
+        axios
+            .post(`${baseUrl}/event`, dataFinal)
+            .then((response) => {
+                console.log(response.data);
+                setIsSuccessModalVisible(true);
+                setIsLoading(false);
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                setIsLoading(false);
+
+                if (error.response && error.response.status === 400) {
+                    Modal.error({
+                        title: "Error",
+                        content: error.response.data.message,
+                    });
+                } else {
+                    Modal.error({
+                        title: "Error",
+                        content: "Failed to submit data!",
+                    });
+                }
+            });
+    };
+
+    const handleSuccessModalOk = () => {
+        setIsSuccessModalVisible(false);
+    };
+
+    // Fungsi untuk mengubah format tanggal
+    const formatDate = (date) => {
+        return moment(date).format("DD/MM/YYYY HH:mm");
+    };
 
     return (
-        <Fragment>
+        <>
             <Form
+                form={form}
                 labelCol={{
                     span: 4,
                 }}
@@ -110,11 +230,14 @@ const AddEvent = () => {
                 style={{
                     maxWidth: 600,
                 }}
+                onFinish={onFinish}
             >
                 <Form.Item
                     label="Nama"
                     labelAlign="left"
                     style={{ marginBottom: 10 }}
+                    name="name"
+                    rules={[{ required: true, message: "Nama wajib diisi!" }]}
                 >
                     <Input style={{ width: 400 }} />
                 </Form.Item>
@@ -122,20 +245,56 @@ const AddEvent = () => {
                     label="Publish"
                     labelAlign="left"
                     style={{ marginBottom: 10 }}
+                    name="publish"
+                    rules={[
+                        {
+                            required: true,
+                            message: "Tanggal Publish wajib diisi!",
+                        },
+                    ]}
                 >
-                    <DatePicker style={{ width: 400 }} />
+                    <DatePicker
+                        showTime
+                        format="DD/MM/YYYY HH:mm"
+                        style={{ width: 400 }}
+                    />
                 </Form.Item>
                 <Form.Item
                     label="Duedate"
                     labelAlign="left"
                     style={{ marginBottom: 10 }}
+                    name="dueDate"
+                    rules={[
+                        {
+                            required: true,
+                            message: "Tanggal Duedate wajib diisi!",
+                        },
+                    ]}
                 >
-                    <DatePicker style={{ width: 400 }} />
+                    <ConfigProvider>
+                        <DatePicker
+                            showTime
+                            format="DD/MM/YYYY HH:mm"
+                        />
+                    </ConfigProvider>
                 </Form.Item>
                 <Form.Item
                     label="Harga"
                     labelAlign="left"
                     style={{ marginBottom: 10 }}
+                    name="harga"
+                    rules={[{ required: true, message: "Harga wajib diisi!" }]}
+                >
+                    <InputNumber style={{ width: 400 }} />
+                </Form.Item>
+                <Form.Item
+                    label="Sub Test"
+                    labelAlign="left"
+                    style={{ marginBottom: 10 }}
+                    name="subtest"
+                    rules={[
+                        { required: true, message: "Sub Test wajib diisi!" },
+                    ]}
                 >
                     <InputNumber style={{ width: 400 }} />
                 </Form.Item>
@@ -143,43 +302,48 @@ const AddEvent = () => {
                     label="Status"
                     labelAlign="left"
                     style={{ marginBottom: 10 }}
+                    name="status"
+                    rules={[{ required: true, message: "Status wajib diisi!" }]}
                 >
                     <Radio.Group>
-                        <Radio value="publish" style={{ width: 150 }}>
+                        <Radio value="1" style={{ width: 150 }}>
                             Publish
                         </Radio>
-                        <Radio value="draft">Draft</Radio>
+                        <Radio value="0">Draft</Radio>
                     </Radio.Group>
+                </Form.Item>
+                <Form.Item wrapperCol={{ offset: 4, span: 14 }}>
+                    <Button
+                        type="primary"
+                        htmlType="submit"
+                        loading={isLoading}
+                    >
+                        {isLoading ? "Loading" : "Submit"}
+                    </Button>
                 </Form.Item>
             </Form>
 
-            {/* <div className="flex justify-between mt-10">
-                <h1 className="text-2xl font-semibold">Sub Tes</h1>
-                <Button
-                    onClick={showModal}
-                    type="primary"
-                    style={{ marginBottom: 16 }}
-                >
-                    Tambah Sub Tes
-                </Button>
-            </div> */}
-
-            {/* <ModalAddEvent
-                visible={modalVisible}
+            {/* Modal Konfirmasi */}
+            <Modal
+                title="Konfirmasi"
+                visible={isModalVisible}
+                onOk={handleOk}
                 onCancel={handleCancel}
-                onAdd={handleAdd}
-            /> */}
+            >
+                <p>Apakah Anda yakin ingin menyimpan data ini?</p>
+            </Modal>
 
-            {/* <Table
-                bordered
-                dataSource={dataSource}
-                columns={columns}
-                rowClassName="editable-row"
-                size="small"
-                pagination={false}
-            /> */}
-        </Fragment>
+            {/* Modal Sukses */}
+            <Modal
+                title="Sukses"
+                visible={isSuccessModalVisible}
+                onOk={handleSuccessModalOk}
+                onCancel={handleSuccessModalOk}
+            >
+                <p>Data berhasil disimpan!</p>
+            </Modal>
+        </>
     );
 };
 
-export default AddEvent;
+export default EventForm;
