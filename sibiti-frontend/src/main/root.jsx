@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import CmsTemplate from "../admin/CmsTemplate";
-import AddEvent from "../admin/ujian/event/add-event/AddEvent";
+import AddEvent from "../admin/ujian/event/form-event/AddEvent";
 import ListEvent from "../admin/ujian/event/list-event/ListEvent";
 import Home from "../Home";
 const router = createBrowserRouter([
