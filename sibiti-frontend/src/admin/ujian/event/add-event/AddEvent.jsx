@@ -17,6 +17,7 @@ const EventForm = () => {
 
     useEffect(() => {
         if (id) {
+            setIsLoading(true)
             setIsEditMode(true);
             fetchEventData(id);
         } else {
@@ -28,7 +29,6 @@ const EventForm = () => {
         try {
             const response = await axios.get(`${baseUrl}/event/${eventId}`);
             const eventData = response.data.data;
-            console.log(eventData);
 
             form.setFieldsValue({
                 name: eventData.name,
@@ -37,7 +37,9 @@ const EventForm = () => {
                 harga: eventData.harga,
                 subtest: eventData.subtest,
             });
+            setIsLoading(false)
         } catch (error) {
+            setIsLoading(false)
             console.error("Error fetching event data:", error);
         }
     };
@@ -53,7 +55,7 @@ const EventForm = () => {
           },
         };
       
-        const axiosMethod = isEditMode ? axios.patch : axios.post;
+        const axiosMethod = isEditMode ? axios.put : axios.post;
       
         axiosMethod(url, dataFinal, requestConfig)
           .then((response) => {
@@ -71,7 +73,7 @@ const EventForm = () => {
             console.error("Error:", error);
             ModalPopup({
               title: "Error",
-              content: error.message,
+              content: error.response.data.message,
             }).error();
             setIsLoading(false);
           });

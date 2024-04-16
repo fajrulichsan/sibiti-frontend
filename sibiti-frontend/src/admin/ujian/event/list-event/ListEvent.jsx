@@ -1,11 +1,13 @@
 // export default ListEvent;
 import React, { useEffect, useState } from "react";
+import moment from "moment";
+import "moment-timezone";
+import axios from "axios";
+
 import { Table, Select, Input, Button, Space, Tag } from "antd";
 import { Link } from "react-router-dom";
-import moment from 'moment';
-import 'moment-timezone';
-import axios from "axios";
 import config from "../../../../config/config";
+import ModalPopup from "../../../../components/ModalPopup";
 
 import useTable from "./hooks/useTable";
 import useDelete from "./hooks/useDelete";
@@ -14,18 +16,20 @@ const { Option } = Select;
 const { Search } = Input;
 
 const ListEvent = () => {
-    const {baseUrl} = config()
+    const { baseUrl } = config();
     const refreshTable = () => {
         fetchData();
-      };
-    const { pagination, handleTableChange, handleChangePageSize, statusText, statusColor } = useTable();
-    const { showDeleteConfirm } = useDelete(refreshTable);
+    };
+    const {
+        pagination,
+        handleTableChange,
+        handleChangePageSize,
+        statusText,
+        statusColor,
+    } = useTable();
+    const { deleteEvent } = useDelete(refreshTable);
     const [loading, setLoading] = useState(false);
     const [events, setEvents] = useState([]);
-
-    useEffect(() => {
-        fetchData();
-    }, []);
 
     const fetchData = async () => {
         setLoading(true);
@@ -38,9 +42,41 @@ const ListEvent = () => {
         setLoading(false);
     };
 
+    const handleSearch = async (value) => {
+        if (value) {
+            setLoading(true);
+            try {
+                const response = await axios.get(
+                    `${baseUrl}/event/search/${value}`
+                );
+                setEvents(response.data.data);
+            } catch (error) {
+                console.error("Error searching data:", error);
+            }
+            setLoading(false);
+        } else {
+            // Jika tidak ada teks pencarian, ambil semua event
+            fetchData();
+        }
+    };
+
     const convertToIndonesiaTime = (time) => {
-        return moment.utc(time).tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
-      };
+        return moment
+            .utc(time)
+            .tz("Asia/Jakarta")
+            .format("YYYY-MM-DD HH:mm:ss");
+    };
+
+    const handleChange = (e) => {
+        const { value } = e.target;
+        if (!value) {
+            fetchData();
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
 
     const columns = [
         {
@@ -61,14 +97,14 @@ const ListEvent = () => {
             dataIndex: "publish",
             key: "publish",
             width: "15%",
-            render : (time) => <span>{convertToIndonesiaTime(time)}</span>
+            render: (time) => <span>{convertToIndonesiaTime(time)}</span>,
         },
         {
             title: "Duedate",
             dataIndex: "dueDate",
             key: "duedate",
             width: "15%",
-            render : (time) => <span>{convertToIndonesiaTime(time)}</span>
+            render: (time) => <span>{convertToIndonesiaTime(time)}</span>,
         },
         {
             title: "Harga",
@@ -83,39 +119,46 @@ const ListEvent = () => {
             dataIndex: "status",
             width: "8%",
             render: (status) => {
-                let color = status == 2 ? 'geekblue' : 'green';
-                if (status === 'loser') {
-                  color = 'volcano';
+                let color = status == 2 ? "geekblue" : "green";
+                if (status === "loser") {
+                    color = "volcano";
                 }
                 return (
-                  <Tag color={statusColor[status]} key={status}>
-                    {statusText[status]}
-                  </Tag>
+                    <Tag color={statusColor[status]} key={status}>
+                        {statusText[status]}
+                    </Tag>
                 );
-              },
+            },
         },
         {
             title: "Action",
             key: "id",
             render: (text, record) => (
                 <Space size="small">
-                    <Button
-                        key={record.key}
-                        ghost
-                        type="primary"
-                    >
+                    <Button key={record.key} ghost type="primary">
                         Subtest
                     </Button>
                     <Button
                         key={record.key}
                         type="default"
-                        onClick={() => window.location.href = "/cms/ujian/event/edit/" + record.id}
+                        onClick={() =>
+                            (window.location.href =
+                                "/cms/ujian/event/edit/" + record.id)
+                        }
                     >
                         Edit
                     </Button>
                     <Button
-                      key={record.id}
-                     onClick={() => showDeleteConfirm(record.id)} danger>
+                        key={record.id}
+                        onClick={() => ModalPopup({
+                            title: "Apakah ingin hapus data ?",
+                            onOk: () => {
+                                deleteEvent(record.id)
+                            },
+                            content: "Klik OK untuk menghapus data ini",
+                        }).showConfirm()}
+                        danger
+                    >
                         Delete
                     </Button>
                 </Space>
@@ -144,7 +187,8 @@ const ListEvent = () => {
                     <Search
                         placeholder="input search text"
                         allowClear
-                        onSearch={(value) => console.log(value)}
+                        onChange={handleChange}
+                        onSearch={(value) => handleSearch(value)}
                         style={{ width: 200 }}
                     />
                 </div>
@@ -167,4 +211,3 @@ const ListEvent = () => {
 };
 
 export default ListEvent;
-
