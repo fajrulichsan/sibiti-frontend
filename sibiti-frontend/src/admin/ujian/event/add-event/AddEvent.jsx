@@ -42,30 +42,6 @@ const EventForm = () => {
         }
     };
 
-    // const postData = (data, status) => {
-    //     let dataFinal = { ...data };
-    //     dataFinal.status = status;
-    //     axios
-    //         .post(`${baseUrl}/event`, dataFinal)
-    //         .then((response) => {
-    //             console.log(response.data);
-    //             setIsLoading(false);
-    //             ModalPopup({
-    //                 title: "Success",
-    //                 content: "Data berhasil disimpan",
-    //                 onOk: (window.location.href = "/cms/ujian/event"),
-    //             }).success();
-    //         })
-    //         .catch((error) => {
-    //             console.error("Error:", error);
-    //             ModalPopup({
-    //                 title: "Error",
-    //                 content: error.message,
-    //             }).error();
-    //             setIsLoading(false);
-    //         });
-    // };
-
     const postData = (data, status) => {
         let dataFinal = { ...data };
         dataFinal.status = status;
