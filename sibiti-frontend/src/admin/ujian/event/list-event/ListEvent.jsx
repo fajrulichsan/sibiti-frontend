@@ -1,10 +1,9 @@
-// export default ListEvent;
 import React, { useEffect, useState } from "react";
 import moment from "moment";
 import "moment-timezone";
 import axios from "axios";
 
-import { Table, Select, Input, Button, Space, Tag } from "antd";
+import { Table, Select, Input, Button, Space, Tag, message } from "antd";
 import { Link } from "react-router-dom";
 import config from "../../../../config/config";
 import ModalPopup from "../../../../components/ModalPopup";
@@ -37,7 +36,8 @@ const ListEvent = () => {
             const response = await axios.get(`${baseUrl}` + "/event");
             setEvents(response.data.data);
         } catch (error) {
-            console.error("Error fetching data:", error);
+            message.error(error.message)
+            console.error(error);
         }
         setLoading(false);
     };
@@ -60,13 +60,6 @@ const ListEvent = () => {
         }
     };
 
-    const convertToIndonesiaTime = (time) => {
-        return moment
-            .utc(time)
-            .tz("Asia/Jakarta")
-            .format("YYYY-MM-DD HH:mm:ss");
-    };
-
     const handleChange = (e) => {
         const { value } = e.target;
         if (!value) {
@@ -77,6 +70,13 @@ const ListEvent = () => {
     useEffect(() => {
         fetchData();
     }, []);
+
+    const convertToIndonesiaTime = (time) => {
+        return moment
+            .utc(time)
+            .tz("Asia/Jakarta")
+            .format("YYYY-MM-DD HH:mm:ss");
+    };
 
     const columns = [
         {
@@ -135,7 +135,15 @@ const ListEvent = () => {
             key: "id",
             render: (text, record) => (
                 <Space size="small">
-                    <Button key={record.key} ghost type="primary">
+                    <Button
+                        key={record.key}
+                        ghost
+                        type="primary"
+                        onClick={() =>
+                            (window.location.href =
+                                "/cms/ujian/event/subtest/" + record.id)
+                        }
+                    >
                         Subtest
                     </Button>
                     <Button
@@ -150,13 +158,15 @@ const ListEvent = () => {
                     </Button>
                     <Button
                         key={record.id}
-                        onClick={() => ModalPopup({
-                            title: "Apakah ingin hapus data ?",
-                            onOk: () => {
-                                deleteEvent(record.id)
-                            },
-                            content: "Klik OK untuk menghapus data ini",
-                        }).showConfirm()}
+                        onClick={() =>
+                            ModalPopup({
+                                title: "Apakah ingin hapus data ?",
+                                onOk: () => {
+                                    deleteEvent(record.id);
+                                },
+                                content: "Klik OK untuk menghapus data ini",
+                            }).showConfirm()
+                        }
                         danger
                     >
                         Delete
