@@ -3,11 +3,11 @@ import CmsTemplate from "../admin/CmsTemplate";
 import AddEvent from "../admin/ujian/event/form-event/AddEvent";
 import ListEvent from "../admin/ujian/event/list-event/ListEvent";
 import Subtest from "../admin/ujian/event/subtest/Subtest";
-import Home from "../Home";
+import Login from "../login/Login";
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <Home />,
+        element: <Login />,
     },
     {
         path: "/cms/ujian/event",
