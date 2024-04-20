@@ -50,17 +50,17 @@ const Sidebar = () => {
         {
           label: 'Admin',
           key: '9',
-          linkTo: '/management/admin',
+          linkTo: '/cms/management/admin',
         },
         {
           label: 'Tentor',
           key: '10',
-          linkTo: '/management/tentor',
+          linkTo: '/cms/management/tentor',
         },
         {
           label: 'Siswa',
           key: '11',
-          linkTo: '/management/siswa',
+          linkTo: '/cms/management/siswa',
         },
       ],
     },

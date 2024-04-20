@@ -4,6 +4,7 @@ import AddEvent from "../admin/ujian/event/form-event/AddEvent";
 import ListEvent from "../admin/ujian/event/list-event/ListEvent";
 import Subtest from "../admin/ujian/event/subtest/Subtest";
 import Login from "../login/Login";
+import ListTentor from "../management/tentor/list-tentor/ListTentor";
 const router = createBrowserRouter([
     {
         path: "/",
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
     {
         path: "/cms/ujian/event/subtest/:id",
         element: <CmsTemplate title="Subtest" content={<Subtest/>} />,
+    },
+    {
+        path: "/cms/management/tentor",
+        element: <CmsTemplate title="Tentor" content={<ListTentor/>} />,
     },
 ]);
 
